@@ -1,3 +1,0 @@
-[submodule "rust-example"]
-	path = rust-example
-	url = git@github.com:niktolis/rust-example
