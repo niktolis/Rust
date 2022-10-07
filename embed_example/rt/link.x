@@ -22,10 +22,39 @@ SECTIONS
         KEEP(*(.vector_table.reset_vector));
     } > FLASH
 
+    /* code section */
     .text :
     {
         *(.text .text.*);
     } > FLASH
+
+    /* const */
+    .rodata :
+    {
+        *(.rodata .rodata.*);
+    } > FLASH
+
+    /* var */
+    .bss :
+    {
+        /* start address of bss */
+        _sbss = .;
+        *(.bss .bss.*);
+        /* end address of bss */
+        _ebss = .;
+    } > RAM
+
+    /* Set LMA of .data section at the end of .rodata section */
+    .data : AT(ADDR(.rodata) + SIZEOF(.rodata))
+    {
+        /* start address of data */
+        _sdata = .;
+        *(.data .data.*)v
+        /* end address of data */
+        _edata = .;
+    } > RAM
+
+    _sidata = LOADADDR(.data);
 
     /DISCARD/ :
     {
