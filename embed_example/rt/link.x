@@ -8,8 +8,10 @@ MEMORY
 
 /* Entry point is the reset handler */
 ENTRY(Reset);
-
+/* Reset vector */
 EXTERN(RESET_VECTOR);
+/* Exceptions vector */
+EXTERN(EXCEPTIONS);
 
 SECTIONS
 {
@@ -61,3 +63,13 @@ SECTIONS
         *(.ARM.exidx .ARM.exidx.*);
     }
 }
+
+/* Default exeption handler */
+PROVIDE(NMI = DefaultExceptionHandler);
+PROVIDE(HardFault = DefaultExceptionHandler);
+PROVIDE(MemManage = DefaultExceptionHandler);
+PROVIDE(BusFault = DefaultExceptionHandler);
+PROVIDE(UsageFault = DefaultExceptionHandler);
+PROVIDE(SVCall = DefaultExceptionHandler);
+PROVIDE(PendSV = DefaultExceptionHandler);
+PROVIDE(SysTick = DefaultExceptionHandler);
