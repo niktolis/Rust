@@ -14,11 +14,12 @@ jobs:
     defaults:
       run:
         working-directory: embed_example/app
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+      - name: Install all Rust targets
+        run: rustup target install thumbv7m-none-eabi
       - name: Build
         run: cargo build --verbose
-      - name: Run tests
-        run: cargo test --verbose
