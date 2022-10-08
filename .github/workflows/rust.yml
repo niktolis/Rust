@@ -15,6 +15,16 @@ jobs:
       run:
         working-directory: embed_example/app
     runs-on: macos-latest
+    continue-on-error: ${{matrix.experimental || false }}
+    strategy:
+      matrix:
+        rust: [nightly, stable]
+
+        include:
+          - rust: stable
+            experimental: true
+          - rust: nightly
+            experimental: true
 
     steps:
       - uses: actions/checkout@v3
