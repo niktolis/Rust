@@ -11,7 +11,7 @@ ENTRY(Reset);
 /* Reset vector */
 EXTERN(RESET_VECTOR);
 /* Exceptions vector */
-EXTERN(EXCEPTIONS);
+EXTERN(__EXCEPTIONS);
 
 SECTIONS
 {
@@ -64,12 +64,14 @@ SECTIONS
     }
 }
 
-/* Default exeption handler */
-PROVIDE(NMI = DefaultExceptionHandler);
-PROVIDE(HardFault = DefaultExceptionHandler);
-PROVIDE(MemManage = DefaultExceptionHandler);
-PROVIDE(BusFault = DefaultExceptionHandler);
-PROVIDE(UsageFault = DefaultExceptionHandler);
-PROVIDE(SVCall = DefaultExceptionHandler);
-PROVIDE(PendSV = DefaultExceptionHandler);
-PROVIDE(SysTick = DefaultExceptionHandler);
+
+EXTERN(DefaultHandler);
+
+PROVIDE(NMI = DefaultHandler);
+EXTERN(HardFault);
+PROVIDE(MemManage = DefaultHandler);
+PROVIDE(BusFault = DefaultHandler);
+PROVIDE(UsageFault = DefaultHandler);
+PROVIDE(SVCall = DefaultHandler);
+PROVIDE(PendSV = DefaultHandler);
+PROVIDE(SysTick = DefaultHandler);

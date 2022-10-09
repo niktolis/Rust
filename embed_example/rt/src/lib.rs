@@ -1,8 +1,28 @@
 #![no_std]
 #![deny(warnings)]
 
+use core::fmt;
 use core::panic::PanicInfo;
 use core::ptr;
+
+pub struct ExceptionFrame {
+    // (General purpose) Register 0
+    pub r0: u32,
+}
+
+impl fmt::Debug for ExceptionFrame {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        struct Hex(u32);
+        impl fmt::Debug for Hex {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                write!(f, "0x{:08x}", self.0)
+            }
+        }
+        f.debug_struct("ExceptionFrame")
+            .field("r0", &Hex(self.r0))
+            .finish()
+    }
+}
 
 // Reset Handler
 #[no_mangle]
@@ -74,7 +94,7 @@ extern "C" {
 /* Array of vectors (pointers to exception handlers) */
 #[link_section = ".vector_table.exceptions"]
 #[no_mangle]
-pub static EXCEPTIONS: [Vector; 14] = [
+pub static __EXCEPTIONS: [Vector; 14] = [
     Vector { handler: NMI },
     Vector { handler: HardFault },
     Vector { handler: MemManage },
@@ -95,10 +115,10 @@ pub static EXCEPTIONS: [Vector; 14] = [
 
 /* Default exception handler. Exceptions that have no assigned handler
 by the user will make use of this. */
-#[no_mangle]
-pub extern "C" fn DefaultExceptionHandler() {
-    loop {}
-}
+// #[no_mangle]
+// pub extern "C" fn DefaultExceptionHandler() {
+//     loop {}
+// }
 
 // Enhance exception type safety for applications
 #[macro_export]
@@ -129,6 +149,38 @@ macro_rules! exception {
             let f: fn(&$crate::ExceptionFrame) -> ! = $handler;
 
             f(ef)
+        }
+    };
+
+    ($Name:ident, $handler:path,state: $State:ty = $initial_state:expr) => {
+        #[allow(unsafe_code)]
+        #[deny(private_no_mangle_fns)] // raise an error if this item is not accessible
+        #[no_mangle]
+        pub unsafe extern "C" fn $Name() {
+            static mut STATE: $State = $initial_state;
+
+            // check that this exception exists
+            let _ = $crate::Exception::$Name;
+
+            // validate the signature of the user provided handler
+            let f: fn(&mut $State) = $handler;
+
+            f(&mut STATE)
+        }
+    };
+
+    ($Name:ident, $handler:path) => {
+        #[allow(unsafe_code)]
+        #[deny(private_no_mangle_fns)] // raise an error if this item is not accessible
+        #[no_mangle]
+        pub unsafe extern "C" fn $Name() {
+            // check that this exception exists
+            let _ = $crate::Exception::$Name;
+
+            // validate the signature of the user provided handler
+            let f: fn() = $handler;
+
+            f()
         }
     };
 }

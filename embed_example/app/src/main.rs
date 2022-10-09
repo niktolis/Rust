@@ -6,11 +6,9 @@
 use core::intrinsics;
 
 //use macro provided in rt lib for type safety
-use rt::entry;
-use rt::exception;
+use rt::{entry, exception, ExceptionFrame};
 
 entry!(main);
-exception!(*, default_handler);
 
 static RODATA: &[u8] = b"Hello, World!";
 static mut BSS: u8 = 0;
@@ -25,10 +23,18 @@ fn main() -> ! {
     //   loop {}
 }
 
-#[no_mangle]
-pub extern "C" fn HardFault() -> ! {
-    loop {}
+// #[no_mangle]
+// pub extern "C" fn HardFault() -> ! {
+//     loop {}
+// }
+
+exception!(HardFault, hard_fault);
+
+fn hard_fault(ef: &ExceptionFrame) -> ! {
+    panic!("{:#?}", ef)
 }
+
+exception!(*, default_handler);
 
 fn default_handler(_irqn: i16) {
     loop {}

@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "name": "Debug (QEMU)",
+            "servertype": "qemu",
+            "cwd": "${workspaceFolder}/app",
+            "preLaunchTask": "Cargo Build (debug)",
+            "runToEntryPoint": "Reset",
+            "executable": "./target/thumbv7m-none-eabi/debug/app",
+            "cpu": "cortex-m3",
+            "machine": "lm3s6965evb",
+        }
+    ]
+}
