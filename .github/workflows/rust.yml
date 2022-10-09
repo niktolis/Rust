@@ -35,8 +35,8 @@ jobs:
           override: true
       - name: Install all Rust targets
         run: rustup target install --toolchain=${{ matrix.rust }} thumbv7m-none-eabi
-      #      - name: Install gdb
-      #        run: brew install --cask gcc-arm-embedded
+      - name: Install gdb
+        run: brew install --cask gcc-arm-embedded
       #      - name: Install qemu
       #        run: brew install qemu
       - name: Build
